@@ -5,13 +5,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug",
+      "name": "reverse-args",
       "type": "go",
       "request": "launch",
       "mode": "debug",
       "program": "main.go",
       "cwd": "example",
       "args": ["run", "./reverse-args.ts", "a", "b", "c"]
+    },
+    {
+      "name": "simple-workspace(deps)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/main.go",
+      "cwd": "${workspaceFolder}/examples/simple-workspace",
+      "args": ["deps"]
     }
   ]
 }

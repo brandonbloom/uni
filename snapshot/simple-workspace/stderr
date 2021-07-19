@@ -1,0 +1,12 @@
+Warning: React version was set to "detect" in eslint-plugin-react settings, but the "react" package is not installed. Assuming latest React version for linting.
+PASS e/src/e.test.ts
+PASS a/src/a.spec.ts
+PASS c/src/c.test.ts
+PASS d/src/d.test.ts
+PASS b/src/b.test.ts
+
+Test Suites: 5 passed, 5 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        0.554 s, estimated 1 s
+Ran all test suites.

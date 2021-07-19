@@ -1,15 +1,15 @@
 
-> @unirepo/placeholder@ postinstall /current/working/path/snapshot/running
+> @unirepo/placeholder@0.0.1 postinstall
 > patch-package
 
 patch-package 6.2.2
 Applying patches...
-audited 184 packages in SOME_AMOUNT_OF_TIME
+
+up to date, audited 184 packages in 2s
 
 SOME_NUMBER_OF packages are looking for funding
   run `npm fund` for details
 
 found 0 vulnerabilities
-
 exit code expected=0 actual=0
 exit code expected=5 actual=5

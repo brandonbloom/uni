@@ -26,6 +26,8 @@ for snapshot in $snapshots; do
     pwd
     if ! ./build.sh 2>stderr >stdout; then
       echo "ERROR"
+      cat stdout
+      cat stderr
       exit 1
     fi
 

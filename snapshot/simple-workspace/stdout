@@ -1,0 +1,9 @@
+
+changed 1 package, and audited 2 packages in 1s
+
+found 0 vulnerabilities
+yarn install v1.22.10
+[1/4] Resolving packages...
+success Already up-to-date.
+Done in 0.48s.
+exit code expected=0 actual=0

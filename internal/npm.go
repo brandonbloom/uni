@@ -17,6 +17,7 @@ type PackageMetadata struct {
 	Dependencies  map[string]string `json:"dependencies,omitempty"`
 	Scripts       map[string]string `json:"scripts,omitempty"`
 	PublishConfig *PublishConfig    `json:"publishConfig,omitempty"`
+	Workspaces    []string          `json:"workspaces,omitempty"`
 }
 
 type PublishConfig struct {

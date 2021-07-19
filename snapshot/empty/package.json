@@ -1,6 +1,7 @@
 {
   "name": "@unirepo/placeholder",
   "description": "GENERATED FILE: DO NOT EDIT! This file is managed by unirepo.",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "@types/source-map-support": "^0.5.3",

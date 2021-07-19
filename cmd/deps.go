@@ -15,7 +15,7 @@ func init() {
 var depsCmd = &cobra.Command{
 	Use:   "deps",
 	Short: "Install dependencies",
-	Long:  `Generates a root package.json file and runs your package manager.`,
+	Long:  `Generates a root package.json, tsconfig.json and other config files and runs your package manager.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		repo := mustLoadRepository()
 		if err := internal.CheckEngines(repo); err != nil {

@@ -7,13 +7,23 @@ type Config struct {
 	Engines      map[string]string
 	Repository   string
 	Registry     string
+	Workspace    WorkspaceConfig
 	Packages     map[string]PackageConfig
 	Dependencies map[string]string
 }
 
+type WorkspaceConfig struct {
+	Name         string
+	Version      string
+	Dependencies map[string]string
+}
+
 type PackageConfig struct {
-	Public      bool
-	Description string
-	Index       string
-	Executables map[string]string
+	Public       bool
+	Description  string
+	Version      string
+	Index        string
+	Folder       string
+	Executables  map[string]string
+	Dependencies map[string]string
 }

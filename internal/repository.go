@@ -1,10 +1,12 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/goccy/go-yaml"
 )
@@ -16,10 +18,17 @@ type Repository struct {
 	DistDir      string
 	TmpDir       string
 	Engines      map[string]string
+	IsWorkspace  bool
+	Workspace    Workspace
 	Packages     map[string]*Package
 	Dependencies map[string]*Dependency
 	Url          string
 	Registry     string
+}
+
+type Workspace struct {
+	Name    string
+	Version string
 }
 
 type Dependency struct {
@@ -28,11 +37,17 @@ type Dependency struct {
 }
 
 type Package struct {
-	Name        string
-	Public      bool
-	Description string
-	Index       string
-	Executables map[string]*Executable
+	Name         string
+	Version      string
+	Folder       string
+	Public       bool
+	Description  string
+	Index        string
+	Dependencies map[string]*Dependency
+	Executables  map[string]*Executable
+}
+
+type TsConfig struct {
 }
 
 type Executable struct {
@@ -67,6 +82,16 @@ func LoadRepository(searchDir string) (*Repository, error) {
 		return nil, err
 	}
 
+	repo.IsWorkspace = len(cfg.Workspace.Version) > 0
+
+	if repo.IsWorkspace {
+		repo.Workspace.Name = cfg.Workspace.Name
+		repo.Workspace.Version = cfg.Workspace.Version
+		if cfg.Dependencies != nil {
+			return nil, errors.New("use dependencies inside workspace")
+		}
+	}
+
 	repo.Engines = make(map[string]string)
 	for engineName, engineVersion := range cfg.Engines {
 		repo.Engines[engineName] = engineVersion
@@ -80,17 +105,47 @@ func LoadRepository(searchDir string) (*Repository, error) {
 
 	repo.Packages = make(map[string]*Package)
 	for packageName, packageConfig := range cfg.Packages {
+		if repo.IsWorkspace {
+			if len(packageConfig.Index) > 0 {
+				return nil, errors.New("use folder instead index inside workspace")
+			}
+			if packageConfig.Folder == "" {
+				return nil, errors.New("use folder for each package in workspace")
+			}
+			if strings.Contains(packageConfig.Folder, "\\") {
+				return nil, errors.New(packageConfig.Folder + " user normal slashes")
+			}
+			if strings.HasPrefix(packageConfig.Folder, ".") || strings.HasPrefix(packageConfig.Folder, "/") {
+				return nil, errors.New(packageConfig.Folder + " must be relative to workspace folder")
+			}
+			if strings.HasSuffix(packageConfig.Folder, ".") || strings.HasSuffix(packageConfig.Folder, "/") {
+				return nil, errors.New(packageConfig.Folder + " folder ends with a invalid char")
+			}
+		}
+		if packageConfig.Dependencies != nil && (!repo.IsWorkspace) {
+			return nil, errors.New("package dependencies is supported only inside workspace")
+		}
 		pkg := &Package{
 			Name:        packageName,
 			Public:      packageConfig.Public,
 			Description: packageConfig.Description,
 			Index:       packageConfig.Index,
+			Folder:      packageConfig.Folder,
 		}
 		pkg.Executables = make(map[string]*Executable)
 		for executableName, executableEntrypoint := range packageConfig.Executables {
 			pkg.Executables[executableName] = &Executable{
 				Name:       executableName,
 				Entrypoint: executableEntrypoint,
+			}
+		}
+		if repo.IsWorkspace && packageConfig.Dependencies != nil {
+			pkg.Dependencies = make(map[string]*Dependency)
+			for dependencyName, dependencyVersion := range packageConfig.Dependencies {
+				pkg.Dependencies[dependencyName] = &Dependency{
+					Name:    dependencyName,
+					Version: dependencyVersion,
+				}
 			}
 		}
 		repo.Packages[packageName] = pkg
@@ -106,7 +161,13 @@ func LoadRepository(searchDir string) (*Repository, error) {
 	for dependencyName, dependencyVersion := range cfg.Dependencies {
 		addDependency(dependencyName, dependencyVersion)
 	}
-	for dependencyName, dependencyVersion := range requiredDependencies {
+	var requiredDeps map[string]string
+	if repo.IsWorkspace {
+		requiredDeps = requiredDependenciesWorkspace
+	} else {
+		requiredDeps = requiredDependenciesMix
+	}
+	for dependencyName, dependencyVersion := range requiredDeps {
 		if _, ok := repo.Dependencies[dependencyName]; !ok {
 			addDependency(dependencyName, dependencyVersion)
 		}

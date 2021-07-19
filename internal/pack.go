@@ -46,7 +46,10 @@ func Pack(repo *Repository, pkg *Package) (PackResult, error) {
 	zw := gzip.NewWriter(packedFile)
 	tw := tar.NewWriter(zw)
 
-	filepath.Walk(distPath, func(file string, fi os.FileInfo, err error) error {
+	filepath.Walk(distPath, func(file string, fi os.FileInfo, error error) error {
+		if(error!=nil) {
+			return error
+		}
 		mode := fi.Mode()
 		switch {
 		case mode.IsDir():

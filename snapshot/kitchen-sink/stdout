@@ -1,13 +1,13 @@
 
-> @unirepo/placeholder@ postinstall /current/working/path/snapshot/kitchen-sink
+> @unirepo/placeholder@0.0.1 postinstall
 > patch-package
 
 patch-package 6.2.2
 Applying patches...
-audited 185 packages in SOME_AMOUNT_OF_TIME
+
+up to date, audited 185 packages in 1s
 
 SOME_NUMBER_OF packages are looking for funding
   run `npm fund` for details
 
 found 0 vulnerabilities
-
